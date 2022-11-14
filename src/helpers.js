@@ -27,7 +27,7 @@ var CLASS_NAME_RE = /\.([a-zA-Z0-9_-]+)/g;
  * @return {Boolean}
  */
 exports.isKeyFrameAtRule = function (node) {
-    return node.type == 'atrule' && node.name.indexOf('keyframes') != -1;
+  return node.type == 'atrule' && node.name.indexOf('keyframes') != -1;
 };
 
 /**
@@ -36,7 +36,7 @@ exports.isKeyFrameAtRule = function (node) {
  * @return {Boolean}
  */
 var isMediaAtRule = exports.isMediaAtRule = function (node) {
-    return node.type == 'atrule' && node.name == 'media';
+  return node.type == 'atrule' && node.name == 'media';
 };
 
 /**
@@ -45,7 +45,7 @@ var isMediaAtRule = exports.isMediaAtRule = function (node) {
  * @return {Boolean}
  */
 exports.isFontFaceAtRule = function (node) {
-    return node.type == 'atrule' && node.name == 'font-face';
+  return node.type == 'atrule' && node.name == 'font-face';
 };
 
 /**
@@ -54,12 +54,12 @@ exports.isFontFaceAtRule = function (node) {
  * @return {Array.<String>}
  */
 exports.selectorToClassNames = function (selector) {
-    var names = [];
-    var result;
-    while ((result = CLASS_NAME_RE.exec(selector)) !== null) {
-        names.push(result[1]);
-    }
-    return names;
+  var names = [];
+  var result;
+  while ((result = CLASS_NAME_RE.exec(selector)) !== null) {
+    names.push(result[1]);
+  }
+  return names;
 };
 
 /**
@@ -70,15 +70,15 @@ exports.selectorToClassNames = function (selector) {
  * @return {String}
  */
 exports.ruleToString = function (rule, parentNode) {
-    var ruleString = rule.toString();
+  var ruleString = rule.toString();
 
-    if (parentNode && isMediaAtRule(parentNode)) {
-        ruleString = [
-            '@', parentNode.name, ' ',  // @media
-            parentNode.params,          // screen and (max-width ...)
-            ' {', ruleString, '}'        // { .. }
-        ].join('');
-    }
+  if (parentNode && isMediaAtRule(parentNode)) {
+    ruleString = [
+      '@', parentNode.name, ' ',  // @media
+      parentNode.params,          // screen and (max-width ...)
+      ' {', ruleString, '}'        // { .. }
+    ].join('');
+  }
 
-    return cssmin(ruleString);
+  return cssmin(ruleString).replace(/\)\+var\(/g, ') + var(');
 };

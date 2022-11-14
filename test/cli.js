@@ -17,68 +17,68 @@
 
 /* global describe, it */
 var expect = require('expect.js'),
-    path = require('path'),
-    fs = require('fs'),
-    childProcess = require('child_process');
+  path = require('path'),
+  fs = require('fs'),
+  childProcess = require('child_process');
 
 var BIN_PARSE_CSS = path.resolve(__dirname, '../bin/parsecss'),
-    TEST_CSS_FILE = path.resolve(__dirname, 'test.css'),
-    CMD_TIMEOUT = 2000;
+  TEST_CSS_FILE = path.resolve(__dirname, 'test.css'),
+  CMD_TIMEOUT = 2000;
 
-describe('bin/parsecss', function() {
-    it('-h should respond with a helpful message', function(done) {
-        childProcess.execFile(BIN_PARSE_CSS, ['-h'], {
-            timeout: CMD_TIMEOUT,
-        }, function(error, stdout, stderr) {
-            expect(error).to.be(null);
-            expect(stderr).to.be.eql('');
-            expect(stdout).to.contain('Usage: bin/parsecss <options>');
-            done();
-        });
+describe('bin/parsecss', function () {
+  it('-h should respond with a helpful message', function (done) {
+    childProcess.execFile(BIN_PARSE_CSS, ['-h'], {
+      timeout: CMD_TIMEOUT,
+    }, function (error, stdout, stderr) {
+      expect(error).to.be(null);
+      expect(stderr).to.be.eql('');
+      expect(stdout).to.contain('Usage: parsecss <options>');
+      done();
     });
+  });
 
-    it('should fail if you pass a file without the -f flag', function(done) {
-        childProcess.execFile(BIN_PARSE_CSS, [TEST_CSS_FILE], {
-            timeout: CMD_TIMEOUT,
-        }, function(error, stdout, stderr) {
-            expect(stderr).to.be.contain('Use the -f flag to specifiy an input file!');
-            done();
-        });
+  it('should fail if you pass a file without the -f flag', function (done) {
+    childProcess.execFile(BIN_PARSE_CSS, [TEST_CSS_FILE], {
+      timeout: CMD_TIMEOUT,
+    }, function (error, stdout, stderr) {
+      expect(stderr).to.be.contain('Use the -f flag to specifiy an input file!');
+      done();
     });
+  });
 
-    it('should work when passed a file via the -f flag', function(done) {
-        childProcess.execFile(BIN_PARSE_CSS, ['-f', TEST_CSS_FILE], {
-            timeout: CMD_TIMEOUT,
-        }, function(error, stdout, stderr) {
-            expect(error).to.be(null);
-            expect(stderr).to.be.eql('');
-            expect(stdout).to.contain('classListCssPairs');
+  it('should work when passed a file via the -f flag', function (done) {
+    childProcess.execFile(BIN_PARSE_CSS, ['-f', TEST_CSS_FILE], {
+      timeout: CMD_TIMEOUT,
+    }, function (error, stdout, stderr) {
+      expect(error).to.be(null);
+      expect(stderr).to.be.eql('');
+      expect(stdout).to.contain('classListCssPairs');
 
-            var parsedOutput = JSON.parse(stdout);
-            expect(parsedOutput).to.have.key('classListCssPairs');
+      var parsedOutput = JSON.parse(stdout);
+      expect(parsedOutput).to.have.key('classListCssPairs');
 
-            var pairs = parsedOutput['classListCssPairs'];
-            expect(pairs).to.have.length(2);
-            done();
-        });
+      var pairs = parsedOutput['classListCssPairs'];
+      expect(pairs).to.have.length(2);
+      done();
     });
+  });
 
-    it('should work when passed a file via stdin', function(done) {
-        var child = childProcess.execFile(BIN_PARSE_CSS, [], {
-            timeout: CMD_TIMEOUT,
-        }, function(error, stdout, stderr) {
-            expect(error).to.be(null);
-            expect(stderr).to.be.eql('');
-            expect(stdout).to.contain('classListCssPairs');
+  it('should work when passed a file via stdin', function (done) {
+    var child = childProcess.execFile(BIN_PARSE_CSS, [], {
+      timeout: CMD_TIMEOUT,
+    }, function (error, stdout, stderr) {
+      expect(error).to.be(null);
+      expect(stderr).to.be.eql('');
+      expect(stdout).to.contain('classListCssPairs');
 
-            var parsedOutput = JSON.parse(stdout);
-            expect(parsedOutput).to.have.key('classListCssPairs');
+      var parsedOutput = JSON.parse(stdout);
+      expect(parsedOutput).to.have.key('classListCssPairs');
 
-            var pairs = parsedOutput['classListCssPairs'];
-            expect(pairs).to.have.length(2);
-            done();
-        });
-        child.stdin.write(fs.readFileSync(TEST_CSS_FILE));
-        child.stdin.end();
+      var pairs = parsedOutput['classListCssPairs'];
+      expect(pairs).to.have.length(2);
+      done();
     });
+    child.stdin.write(fs.readFileSync(TEST_CSS_FILE));
+    child.stdin.end();
+  });
 });

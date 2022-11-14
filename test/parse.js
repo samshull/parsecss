@@ -17,105 +17,117 @@
 
 /* global describe, it */
 var expect = require('expect.js'),
-    parse = require('../src/parse');
+  parse = require('../src/parse');
 
-describe('parseCSS', function() {
-    it('should return an empty object - empty', function() {
-        expect(parse.parseCSS('')).to.be.eql({});
-    });
+describe('parseCSS', function () {
+  it('should return an empty object - empty', function () {
+    expect(parse.parseCSS('')).to.be.eql({});
+  });
 
-    it('should correctly split global and classList css', function() {
-        var css = [
-            'a { color: blue; }',
-            'a.link { color: red; }'
-        ].join('');
-        expect(parse.parseCSS(css)).to.be.eql({
-            globalCss: ['a{color:blue}'],
-            classListCssPairs: [
-                [['link'], 'a.link{color:red}']
-            ]
-        });
+  it('should correctly split global and classList css', function () {
+    var css = [
+      'a { color: blue; }',
+      'a.link { color: red; }'
+    ].join('');
+    expect(parse.parseCSS(css)).to.be.eql({
+      globalCss: ['a{color:blue}'],
+      classListCssPairs: [
+        [['link'], 'a.link{color:red}']
+      ]
     });
+  });
 
-    it('should correctly handle multiple similar classList css', function() {
-        var css = [
-            '.link { color: blue; display: none; }',
-            'a.link { color: red; }'
-        ].join('');
-        expect(parse.parseCSS(css)).to.be.eql({
-            classListCssPairs: [
-                [['link'], '.link{color:blue;display:none}'],
-                [['link'], 'a.link{color:red}']
-            ]
-        });
+  it('should correctly handle multiple similar classList css', function () {
+    var css = [
+      '.link { color: blue; display: none; }',
+      'a.link { color: red; }'
+    ].join('');
+    expect(parse.parseCSS(css)).to.be.eql({
+      classListCssPairs: [
+        [['link'], '.link{color:blue;display:none}'],
+        [['link'], 'a.link{color:red}']
+      ]
     });
+  });
 
-    it('should not split multiple selectors with similar classList css', function() {
-        var css = '.link:before,.link a { color: blue; display: none; }';
-        expect(parse.parseCSS(css)).to.be.eql({
-            classListCssPairs: [
-                [['link'], '.link:before,.link a{color:blue;display:none}']
-            ]
-        });
+  it('should not split multiple selectors with similar classList css', function () {
+    var css = '.link:before,.link a { color: blue; display: none; }';
+    expect(parse.parseCSS(css)).to.be.eql({
+      classListCssPairs: [
+        [['link'], '.link:before,.link a{color:blue;display:none}']
+      ]
     });
+  });
 
-    it('should correctly handle @media at rules', function() {
-        var css = [
-            '@media screen {',
-            '.link { color: blue; display: none; }',
-            '}',
-            'a.link { color: red; }'
-        ].join('');
-        expect(parse.parseCSS(css)).to.be.eql({
-            classListCssPairs: [
-                [['link'], '@media screen{.link{color:blue;display:none}}'],
-                [['link'], 'a.link{color:red}']
-            ]
-        });
+  it('should correctly handle @media at rules', function () {
+    var css = [
+      '@media screen {',
+      '.link { color: blue; display: none; }',
+      '}',
+      'a.link { color: red; }'
+    ].join('');
+    expect(parse.parseCSS(css)).to.be.eql({
+      classListCssPairs: [
+        [['link'], '@media screen{.link{color:blue;display:none}}'],
+        [['link'], 'a.link{color:red}']
+      ]
     });
+  });
 
-    it('should correctly handle @fontface at rules', function() {
-        var css = [
-            '@font-face{',
-            'font-family:\'q-icons\';',
-            'src:url(\'/static/fonts/q-icons/q-icons.eot\')',
-            '}'
-        ].join('');
-        expect(parse.parseCSS(css)).to.be.eql({fontfaceCss: [css]});
-    });
+  it('should correctly handle @fontface at rules', function () {
+    var css = [
+      '@font-face{',
+      'font-family:\'q-icons\';',
+      'src:url(\'/static/fonts/q-icons/q-icons.eot\')',
+      '}'
+    ].join('');
+    expect(parse.parseCSS(css)).to.be.eql({ fontfaceCss: [css] });
+  });
 
-    it('should corretly handle @keyframes at rules', function() {
-        var css = [
-            '@keyframes fadeOut{',
-            'from{opacity:1}',
-            'to{opacity:0}',
-            '}'
-        ].join('');
-        expect(parse.parseCSS(css)).to.be.eql({
-            keyframesCss: [
-                ['fadeOut', css]
-            ]
-        });
+  it('should corretly handle @keyframes at rules', function () {
+    var css = [
+      '@keyframes fadeOut{',
+      'from{opacity:1}',
+      'to{opacity:0}',
+      '}'
+    ].join('');
+    expect(parse.parseCSS(css)).to.be.eql({
+      keyframesCss: [
+        ['fadeOut', css]
+      ]
     });
+  });
 
-    it('should corretly handle vendor prefixed @keyframes at rules', function() {
-        var css1 = [
-            '@keyframes fadeOut{',
-            'from{opacity:1}',
-            'to{opacity:0}',
-            '}'
-        ].join('');
-        var css2 = [
-            '@-webkit-keyframes fadeOut{',
-            'from{opacity:1}',
-            'to{opacity:0}',
-            '}'
-        ].join('');
-        expect(parse.parseCSS(css1 + '\n' + css2)).to.be.eql({
-            keyframesCss: [
-                ['fadeOut', css1],
-                ['fadeOut', css2]
-            ]
-        });
+  it('should corretly handle vendor prefixed @keyframes at rules', function () {
+    var css1 = [
+      '@keyframes fadeOut{',
+      'from{opacity:1}',
+      'to{opacity:0}',
+      '}'
+    ].join('');
+    var css2 = [
+      '@-webkit-keyframes fadeOut{',
+      'from{opacity:1}',
+      'to{opacity:0}',
+      '}'
+    ].join('');
+    expect(parse.parseCSS(css1 + '\n' + css2)).to.be.eql({
+      keyframesCss: [
+        ['fadeOut', css1],
+        ['fadeOut', css2]
+      ]
     });
+  });
+
+  it('should corretly handle calc with custom properties', function () {
+    var css = '.special { --custom: calc(var(--x) + var(--x2)); }';
+    expect(parse.parseCSS(css)).to.be.eql({
+      classListCssPairs: [
+        [
+          ['special'],
+          '.special{--custom:calc(var(--x) + var(--x2))}'
+        ]
+      ]
+    });
+  });
 });
